@@ -1,0 +1,13 @@
+{
+  "name": "PlatformGame",
+  "version": "0.0.1",
+  "author": "Denys Bykanov",
+  "description": "Game, kill time",
+  "devDependencies": {
+    "browserify": "latest"
+  },
+  "scripts": {
+    "build-js": "browserify js/lib/main.js > js/build.js",
+    "watch-js": "watchify js/lib/main.js -o js/build.js -v"
+  }
+}
