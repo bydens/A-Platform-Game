@@ -348,7 +348,7 @@ function runAnimation(frameFunc) {
   var lastTime = null;
   function frame(time) {
     var stop = false;
-    if (lastTime != null) {
+    if (lastTime !== null) {
       var timeStep = Math.min(time - lastTime, 100) / 1000;
       stop = frameFunc(timeStep) === false;
     }
@@ -375,16 +375,23 @@ function runLevel(level, Display, andThen) {
   });
 }
 
+var addLife = 2;
 function runGame(plans, Display) {
-  function startLevel(n) {
+  function startLevel(n, life) {
     runLevel(new Level(plans[n]), Display, function(status) {
-      if (status == "lost")
-        startLevel(n);
-      else if (n < plans.length - 1)
-        startLevel(n + 1);
-      else
+      if (status == "lost"){
+        if (life){
+          life--;
+          startLevel(n, life);
+        } else {
+          startLevel(0, addLife);
+        }
+      } else if (n < plans.length - 1) {
+        startLevel(n + 1, life);
+      } else {
         console.log("You win!");
+      }
     });
   }
-  startLevel(0);
+  startLevel(0, addLife);
 }
