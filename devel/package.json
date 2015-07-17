@@ -1,0 +1,17 @@
+{
+  "name": "unitests",
+  "version": "1.0.0",
+  "description": "Tests for game platform",
+  "main": "build.js",
+  "scripts": {
+    "test": "mocha tests.js",
+    "test-in-browser": "beefy tests.js"
+  },
+  "author": "Denys Bykanov",
+  "license": "MIT",
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^2.2.5",
+    "sinon": "^1.15.4"
+  }
+}

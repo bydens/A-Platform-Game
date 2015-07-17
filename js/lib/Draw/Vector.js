@@ -10,3 +10,5 @@ Vector.prototype.times = function(factor) {
 };
 
 module.exports = Vector;
+
+console.log(new Vector(null));
