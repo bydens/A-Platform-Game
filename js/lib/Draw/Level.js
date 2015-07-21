@@ -2,6 +2,8 @@ var actorChars = require('../../data/actorChars');
 var Vector = require('./Vector');
 //---------------------Level---------------------------------------------------
 function Level(plan) {
+  if (Object.prototype.toString.call(plan).toUpperCase() !== '[OBJECT ARRAY]') 
+    throw 'Argument is not array';
   this.width = plan[0].length;
   this.height = plan.length;
   this.grid = [];
@@ -33,12 +35,9 @@ Level.prototype.isFinished = function() {
   return this.status !== null && this.finishDelay < 0;
 };
 
-/**
-* Метод сообщает, не пересекается ли прямоугольник 
-* (заданный позицией и размером) с каким-либо непустым пространством 
-* фоновой решётки.
-*/
 Level.prototype.obstacleAt = function(pos, size) {
+  if (!(pos instanceof Vector) || !(size instanceof Vector)) 
+    throw 'Argument is not object of Vector';
   var xStart = Math.floor(pos.x);
   var xEnd = Math.ceil(pos.x + size.x);
   var yStart = Math.floor(pos.y);

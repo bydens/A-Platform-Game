@@ -263,13 +263,7 @@ Player.prototype.act = function(step, level, keys) {
 
 module.exports = Player;
 },{"../Draw/Vector":8}],6:[function(require,module,exports){
-//простой способ создания элемента с назначением класса
-function elt(name, className) {
-  var elt = document.createElement(name);
-  if (className)
-    elt.className = className;
-  return elt;
-}
+var elt = require('../functions/elt');
 
 //----------------------------------Display-------------------------------------
 function DOMDisplay(parent, level) {
@@ -281,7 +275,7 @@ function DOMDisplay(parent, level) {
   this.drawFrame();
 }
 
-var scale = 20; //количество пикселей, которое занимает один элемент решётки.
+var scale = 20; 
 
 DOMDisplay.prototype.drawBackground = function() {
   var table = elt("table", "background");
@@ -343,11 +337,13 @@ DOMDisplay.prototype.clear = function() {
 };
 
 module.exports = DOMDisplay;
-},{}],7:[function(require,module,exports){
+},{"../functions/elt":9}],7:[function(require,module,exports){
 var actorChars = require('../../data/actorChars');
 var Vector = require('./Vector');
 //---------------------Level---------------------------------------------------
 function Level(plan) {
+  if (Object.prototype.toString.call(plan).toUpperCase() !== '[OBJECT ARRAY]') 
+    throw 'Argument is not array';
   this.width = plan[0].length;
   this.height = plan.length;
   this.grid = [];
@@ -379,12 +375,9 @@ Level.prototype.isFinished = function() {
   return this.status !== null && this.finishDelay < 0;
 };
 
-/**
-* Метод сообщает, не пересекается ли прямоугольник 
-* (заданный позицией и размером) с каким-либо непустым пространством 
-* фоновой решётки.
-*/
 Level.prototype.obstacleAt = function(pos, size) {
+  if (!(pos instanceof Vector) || !(size instanceof Vector)) 
+    throw 'Argument is not object of Vector';
   var xStart = Math.floor(pos.x);
   var xEnd = Math.ceil(pos.x + size.x);
   var yStart = Math.floor(pos.y);
@@ -450,17 +443,37 @@ module.exports = Level;
 },{"../../data/actorChars":1,"./Vector":8}],8:[function(require,module,exports){
 //-----------------------------------Vector ------------------------------------
 function Vector(x, y) {
+  if (typeof(x) != 'number' || typeof(y) != 'number')
+    throw 'Argument is not number';
   this.x = x; this.y = y;
 }
 Vector.prototype.plus = function(other) {
+  if (Object.prototype.toString.call(other).toUpperCase() !== '[OBJECT OBJECT]')
+    throw 'Argument is not object';
   return new Vector(this.x + other.x, this.y + other.y);
 };
 Vector.prototype.times = function(factor) {
+  if (typeof(factor) != 'number')
+    throw 'Argument is not number';
   return new Vector(this.x * factor, this.y * factor);
 };
 
 module.exports = Vector;
+// var test = new Vector();
+// console.log(test);
+// console.log(test.plus('{ x: 3, y: 4 }'));
+
+
 },{}],9:[function(require,module,exports){
+function elt(name, className) {
+  var elt = document.createElement(name);
+  if (className)
+    elt.className = className;
+  return elt;
+}
+
+module.exports = elt;
+},{}],10:[function(require,module,exports){
 //-----------------------Running the game---------------------------------------
 function runAnimation(frameFunc) {
   var lastTime = null;
@@ -478,7 +491,7 @@ function runAnimation(frameFunc) {
 }
 
 module.exports = runAnimation;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var Level = require('../Draw/Level');
 var runLevel = require('./runLevel');
 
@@ -505,7 +518,7 @@ function runGame(plans, Display) {
 }
 
 module.exports = runGame;
-},{"../Draw/Level":7,"./runLevel":11}],11:[function(require,module,exports){
+},{"../Draw/Level":7,"./runLevel":12}],12:[function(require,module,exports){
 var trackKeys = require('./trackKeys');
 var runAnimation = require('./runAnimation');
 var arrowCodes = {37: "left", 38: "up", 39: "right"};
@@ -550,7 +563,7 @@ function runLevel(level, Display, andThen) {
 }
 
 module.exports = runLevel;
-},{"./runAnimation":9,"./trackKeys":12}],12:[function(require,module,exports){
+},{"./runAnimation":10,"./trackKeys":13}],13:[function(require,module,exports){
 //----------------------------Tracking keys-------------------------------------
 function trackKeys(codes) {
   var pressed = Object.create(null);
@@ -573,10 +586,10 @@ function trackKeys(codes) {
 }
 
 module.exports = trackKeys;
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var GAME_LEVELS = require('../data/game_levels.js');
 var DOMDisplay = require('./Draw/DOMDisplay');
 var runGame = require('./functions/runGame');
 
 runGame(GAME_LEVELS, DOMDisplay);
-},{"../data/game_levels.js":2,"./Draw/DOMDisplay":6,"./functions/runGame":10}]},{},[13]);
+},{"../data/game_levels.js":2,"./Draw/DOMDisplay":6,"./functions/runGame":11}]},{},[14]);

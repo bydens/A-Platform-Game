@@ -1,10 +1,4 @@
-//простой способ создания элемента с назначением класса
-function elt(name, className) {
-  var elt = document.createElement(name);
-  if (className)
-    elt.className = className;
-  return elt;
-}
+var elt = require('../functions/elt');
 
 //----------------------------------Display-------------------------------------
 function DOMDisplay(parent, level) {
@@ -16,7 +10,7 @@ function DOMDisplay(parent, level) {
   this.drawFrame();
 }
 
-var scale = 20; //количество пикселей, которое занимает один элемент решётки.
+var scale = 20; 
 
 DOMDisplay.prototype.drawBackground = function() {
   var table = elt("table", "background");
