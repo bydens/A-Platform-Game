@@ -153,19 +153,24 @@ if (typeof module != "undefined" && module.exports)
   module.exports = GAME_LEVELS;
 
 },{}],3:[function(require,module,exports){
+//-----------------------------Coin---------------------------------------------
 var Vector = require('../Draw/Vector');
 
-//-----------------------------Coin---------------------------------------------
+var wobbleSpeed = 8, wobbleDist = 0.07;
+
 function Coin(pos) {
+  if (!(pos instanceof Vector))
+    throw 'Argument is not object of Vector';
   this.basePos = this.pos = pos.plus(new Vector(0.2, 0.1));
   this.size = new Vector(0.6, 0.6);
   this.wobble = Math.random() * Math.PI * 2;
 }
+
 Coin.prototype.type = "coin";
 
-var wobbleSpeed = 8, wobbleDist = 0.07;
-
 Coin.prototype.act = function(step) {
+  if (typeof(step) != 'number')
+    throw 'Argument is not number';
   this.wobble += step * wobbleSpeed;
   var wobblePos = Math.sin(this.wobble) * wobbleDist;
   this.pos = this.basePos.plus(new Vector(0, wobblePos));
@@ -177,6 +182,8 @@ var Vector = require('../Draw/Vector');
 
 //---------------------------------Lava---------------------------------------
 function Lava(pos, ch) {
+  if (!(pos instanceof Vector))
+    throw 'Argument is not object of Vector';
   this.pos = pos;
   this.size = new Vector(1, 1);
   if (ch == "=") {
@@ -186,6 +193,8 @@ function Lava(pos, ch) {
   } else if (ch == "v") {
     this.speed = new Vector(0, 3);
     this.repeatPos = pos;
+  } else {
+    throw 'Unknow object!';
   }
 }
 Lava.prototype.type = "lava";
@@ -263,9 +272,11 @@ Player.prototype.act = function(step, level, keys) {
 
 module.exports = Player;
 },{"../Draw/Vector":8}],6:[function(require,module,exports){
+//----------------------------------Display-------------------------------------
 var elt = require('../functions/elt');
 
-//----------------------------------Display-------------------------------------
+var scale = 20; 
+
 function DOMDisplay(parent, level) {
   this.wrap = parent.appendChild(elt("div", "game"));
   this.level = level;
@@ -274,8 +285,6 @@ function DOMDisplay(parent, level) {
   this.actorLayer = null;
   this.drawFrame();
 }
-
-var scale = 20; 
 
 DOMDisplay.prototype.drawBackground = function() {
   var table = elt("table", "background");
@@ -343,7 +352,7 @@ var Vector = require('./Vector');
 //---------------------Level---------------------------------------------------
 function Level(plan) {
   if (Object.prototype.toString.call(plan).toUpperCase() !== '[OBJECT ARRAY]') 
-    throw 'Argument is not array';
+    throw new Error('Argument is not array');
   this.width = plan[0].length;
   this.height = plan.length;
   this.grid = [];
@@ -447,11 +456,13 @@ function Vector(x, y) {
     throw 'Argument is not number';
   this.x = x; this.y = y;
 }
+
 Vector.prototype.plus = function(other) {
   if (Object.prototype.toString.call(other).toUpperCase() !== '[OBJECT OBJECT]')
     throw 'Argument is not object';
   return new Vector(this.x + other.x, this.y + other.y);
 };
+
 Vector.prototype.times = function(factor) {
   if (typeof(factor) != 'number')
     throw 'Argument is not number';
@@ -459,11 +470,6 @@ Vector.prototype.times = function(factor) {
 };
 
 module.exports = Vector;
-// var test = new Vector();
-// console.log(test);
-// console.log(test.plus('{ x: 3, y: 4 }'));
-
-
 },{}],9:[function(require,module,exports){
 function elt(name, className) {
   var elt = document.createElement(name);

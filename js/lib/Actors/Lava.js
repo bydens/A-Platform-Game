@@ -2,6 +2,8 @@ var Vector = require('../Draw/Vector');
 
 //---------------------------------Lava---------------------------------------
 function Lava(pos, ch) {
+  if (!(pos instanceof Vector))
+    throw 'Argument is not object of Vector';
   this.pos = pos;
   this.size = new Vector(1, 1);
   if (ch == "=") {
@@ -11,6 +13,8 @@ function Lava(pos, ch) {
   } else if (ch == "v") {
     this.speed = new Vector(0, 3);
     this.repeatPos = pos;
+  } else {
+    throw 'Unknow object!';
   }
 }
 Lava.prototype.type = "lava";

@@ -3,7 +3,7 @@ var Vector = require('./Vector');
 //---------------------Level---------------------------------------------------
 function Level(plan) {
   if (Object.prototype.toString.call(plan).toUpperCase() !== '[OBJECT ARRAY]') 
-    throw 'Argument is not array';
+    throw new Error('Argument is not array');
   this.width = plan[0].length;
   this.height = plan.length;
   this.grid = [];

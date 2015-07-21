@@ -1,6 +1,8 @@
+//----------------------------------Display-------------------------------------
 var elt = require('../functions/elt');
 
-//----------------------------------Display-------------------------------------
+var scale = 20; 
+
 function DOMDisplay(parent, level) {
   this.wrap = parent.appendChild(elt("div", "game"));
   this.level = level;
@@ -9,8 +11,6 @@ function DOMDisplay(parent, level) {
   this.actorLayer = null;
   this.drawFrame();
 }
-
-var scale = 20; 
 
 DOMDisplay.prototype.drawBackground = function() {
   var table = elt("table", "background");
