@@ -4,6 +4,12 @@ var elt = require('../functions/elt');
 var scale = 20; 
 
 function DOMDisplay(parent, level) {
+  if (
+        Object.prototype.toString.call(parent) !== '[object HTMLBodyElement]' ||
+        level.constructor.name !== 'Level' 
+      )
+    throw 'Error of type arguments in DOMDisplay';
+
   this.wrap = parent.appendChild(elt("div", "game"));
   this.level = level;
 

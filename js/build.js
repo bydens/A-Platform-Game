@@ -178,9 +178,9 @@ Coin.prototype.act = function(step) {
 
 module.exports = Coin;
 },{"../Draw/Vector":8}],4:[function(require,module,exports){
+//---------------------------------Lava---------------------------------------
 var Vector = require('../Draw/Vector');
 
-//---------------------------------Lava---------------------------------------
 function Lava(pos, ch) {
   if (!(pos instanceof Vector))
     throw 'Argument is not object of Vector';
@@ -200,6 +200,11 @@ function Lava(pos, ch) {
 Lava.prototype.type = "lava";
 
 Lava.prototype.act = function(step, level) {
+  if (
+      typeof(step) !== 'number' || 
+      level.constructor.name !== 'Level'
+    )
+    throw 'Error of type arguments in Lava.act';
   var newPos = this.pos.plus(this.speed.times(step));
   if (!level.obstacleAt(newPos, this.size))
     this.pos = newPos;
@@ -211,22 +216,30 @@ Lava.prototype.act = function(step, level) {
 
 module.exports = Lava;
 },{"../Draw/Vector":8}],5:[function(require,module,exports){
+//---------------------------------Player---------------------------------------
 var Vector = require('../Draw/Vector');
 
-//---------------------------------Player---------------------------------------
 var playerXSpeed = 7;
 var gravity = 30;
 var jumpSpeed = 17;
 
 function Player(pos) {
+  if (!(pos instanceof Vector))
+    throw 'Argument is not type of Vector';
   this.pos = pos.plus(new Vector(0, -0.5));
   this.size = new Vector(0.8, 1.5);
   this.speed = new Vector(0, 0);
 }
+
 Player.prototype.type = "player";
 
-
 Player.prototype.moveX = function(step, level, keys) {
+  if (
+        typeof(step) !== 'number' || 
+        level.constructor.name !== 'Level' || 
+        Object.prototype.toString.call(keys).toUpperCase() !== '[OBJECT OBJECT]'
+      )
+    throw 'Error of type arguments in Player.moveX';
   this.speed.x = 0;
   if (keys.left) this.speed.x -= playerXSpeed;
   if (keys.right) this.speed.x += playerXSpeed;
@@ -241,6 +254,12 @@ Player.prototype.moveX = function(step, level, keys) {
 };
 
 Player.prototype.moveY = function(step, level, keys) {
+  if (
+        typeof(step) !== 'number' || 
+        level.constructor.name !== 'Level' || 
+        Object.prototype.toString.call(keys).toUpperCase() !== '[OBJECT OBJECT]'
+      )
+    throw 'Error of type arguments in Player.moveY';
   this.speed.y += step * gravity;
   var motion = new Vector(0, this.speed.y * step);
   var newPos = this.pos.plus(motion);
@@ -257,6 +276,12 @@ Player.prototype.moveY = function(step, level, keys) {
 };
 
 Player.prototype.act = function(step, level, keys) {
+  if (
+        typeof(step) !== 'number' || 
+        level.constructor.name !== 'Level' || 
+        Object.prototype.toString.call(keys).toUpperCase() !== '[OBJECT OBJECT]'
+      )
+    throw 'Error of type arguments in Player.act';
   this.moveX(step, level, keys);
   this.moveY(step, level, keys);
 
@@ -278,6 +303,12 @@ var elt = require('../functions/elt');
 var scale = 20; 
 
 function DOMDisplay(parent, level) {
+  if (
+        Object.prototype.toString.call(parent) !== '[object HTMLBodyElement]' ||
+        level.constructor.name !== 'Level' 
+      )
+    throw 'Error of type arguments in DOMDisplay';
+
   this.wrap = parent.appendChild(elt("div", "game"));
   this.level = level;
 

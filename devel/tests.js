@@ -1,4 +1,5 @@
 var Coin = require('../js/lib/Actors/Coin'),
+    game_levels = require('../js/data/game_levels'),
     Lava = require('../js/lib/Actors/Lava'),
     Player = require('../js/lib/Actors/Player'),
     Vector = require('../js/lib/Draw/Vector'),
@@ -36,7 +37,6 @@ describe('Object "Coin"', function() {
     expect(testCoin.act).withArgs(undefined).to.throwException();
     expect(testCoin.act).withArgs(false).to.throwException();
     expect(testCoin.act).withArgs(true).to.throwException();
-    // expect(testCoin.act).withArgs(0.001).to.not.throwException();
     expect(testCoin.act).withArgs('string').to.throwException();
     expect(testCoin.act).withArgs([]).to.throwException();
     expect(testCoin.act).withArgs({}).to.throwException();
@@ -96,27 +96,165 @@ describe('Object "Lava"', function() {
       .to.throwException(/Argument is not object of Vector/);
     expect(function(){ new Lava(function(){}, '='); })
       .to.throwException(/Argument is not object of Vector/);
+  });
 
+  it('Check property "type" in object "Lava"', function(){
+    expect(testLava).to.have.property('type', 'lava');
   });
 
   it('Check method "act" in object "Lava"', function(){
     expect(testLava).to.have.property('act');
   });
 
-  it('Check property "type" in object "Lava"', function(){
-    expect(testLava).to.have.property('type', 'lava');
+  it('Argument in method "act" of "Lava" object must be "number"', function(){
+    expect(function(){ testLava.act(0.01, testLevel); }).to.not.throwException();
+    expect(function(){ testLava.act(null, testLevel); }).to.throwException();
+    expect(function(){ testLava.act(undefined, testLevel); }).to.throwException();
+    expect(function(){ testLava.act(false, testLevel); }).to.throwException();
+    expect(function(){ testLava.act(true, testLevel); }).to.throwException();
+    expect(function(){ testLava.act('string', testLevel); }).to.throwException();
+    expect(function(){ testLava.act([], testLevel); }).to.throwException();
+    expect(function(){ testLava.act({}, testLevel); }).to.throwException();
+    expect(function(){ testLava.act(function(){}, testLevel); }).to.throwException();
+    expect(function(){ testLava.act(0.01, null); }).to.throwException();
+    expect(function(){ testLava.act(0.01, undefined); }).to.throwException();
+    expect(function(){ testLava.act(0.01, false); }).to.throwException();
+    expect(function(){ testLava.act(0.01, true); }).to.throwException();
+    expect(function(){ testLava.act(0.01, 'string'); }).to.throwException();
+    expect(function(){ testLava.act(0.01, []); }).to.throwException();
+    expect(function(){ testLava.act(0.01, {}); }).to.throwException();
+    expect(function(){ testLava.act(0.01, function(){}); }).to.throwException();
   });
+
 });
 
+describe('Object "Player"', function() {
 
+  var testVector = new Vector(3, 4),
+      testPlayer = new Player(testVector),
+      testLevel = new Level(['']);
 
+  it('Check to create new object "Player"', function(){
+    expect(testPlayer).to.be.ok;
+  });
 
+  it('Argument in constructor "Player" must be only "Vector" of type', function(){
+    expect(function(){ new Player(null); }).to.throwException();
+    expect(function(){ new Player(undefined); }).to.throwException();
+    expect(function(){ new Player(false); }).to.throwException();
+    expect(function(){ new Player(true); }).to.throwException();
+    expect(function(){ new Player(1); }).to.throwException();
+    expect(function(){ new Player('string'); }).to.throwException();
+    expect(function(){ new Player([]); }).to.throwException();
+    expect(function(){ new Player({}); }).to.throwException();
+    expect(function(){ new Player(function(){}); }).to.throwException();
+    expect(function(){ new Player(testVector); }).to.not.throwException();
+  });
 
+  it('Check property "type" in object "Player"', function(){
+    expect(testPlayer).to.have.property('type', 'player');
+  });
 
+  it('Check method "act" in object "Player"', function(){
+    expect(new Player(testVector)).to.have.property('act');
+  });
 
+  it('Argument in method "act" of "Player" object must be "number", "Level", "Object"', function(){
+    expect(function(){ testPlayer.act(0.01, testLevel, {}); }).to.not.throwException();
+    expect(function(){ testPlayer.act(null, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(undefined, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(false, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(true, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.act('string', testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.act([], testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.act({}, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(function(){}, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, null, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, undefined, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, false, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, true, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, 1, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, 'string', {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, [], {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, {}, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, function(){}, {}); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, testLevel, null); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, testLevel, undefined); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, testLevel, false); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, testLevel, true); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, testLevel, 'string'); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, testLevel, []); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, testLevel, 1); }).to.throwException();
+    expect(function(){ testPlayer.act(0.01, testLevel, function(){}); }).to.throwException();
+  });
 
+  it('Check method "moveX" in object "Player"', function(){
+    expect(new Player(testVector)).to.have.property('moveX');
+  });
 
+  it('Argument in method "moveX" of "Player" object must be "number", "Level", "Object"', function(){
+    expect(function(){ testPlayer.moveX(0.01, testLevel, {}); }).to.not.throwException();
+    expect(function(){ testPlayer.moveX(null, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(undefined, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(false, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(true, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX('string', testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX([], testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX({}, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(function(){}, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, null, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, undefined, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, false, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, true, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, 1, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, 'string', {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, [], {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, {}, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, function(){}, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, null); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, undefined); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, false); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, true); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, 'string'); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, []); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, 1); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, function(){}); }).to.throwException();
+  });
 
+  it('Check method "moveY" in object "Player"', function(){
+    expect(new Player(testVector)).to.have.property('moveY');
+  });
+
+  it('Argument in method "moveY" of "Player" object must be "number", "Level", "Object"', function(){
+    expect(function(){ testPlayer.moveY(0.01, testLevel, {}); }).to.not.throwException();
+    expect(function(){ testPlayer.moveY(null, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(undefined, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(false, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(true, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY('string', testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY([], testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY({}, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(function(){}, testLevel, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, null, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, undefined, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, false, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, true, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, 1, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, 'string', {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, [], {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, {}, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, function(){}, {}); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, testLevel, null); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, testLevel, undefined); }).to.throwException();
+    expect(function(){ testPlayer.moveY(0.01, testLevel, false); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, true); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, 'string'); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, []); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, 1); }).to.throwException();
+    expect(function(){ testPlayer.moveX(0.01, testLevel, function(){}); }).to.throwException();
+  });
+
+});
 
 describe('Object "Vector"', function() {
   
@@ -308,7 +446,10 @@ describe('Object "Level"', function() {
 });
 
 describe('Object DOMDisplay', function() {
-  // it('Check create new object DOMDisplay', function() {
-  //   expect(new DOMDisplay('<div class="game"></div>', new Level([''])).to.be.ok;
-  // });
+  
+  it('Check create new object DOMDisplay', function() {
+    expect(new DOMDisplay(document.body, new Level(game_levels[0]))).to.be.ok;
+  });
+
+});
 });

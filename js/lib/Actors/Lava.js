@@ -1,6 +1,6 @@
+//---------------------------------Lava---------------------------------------
 var Vector = require('../Draw/Vector');
 
-//---------------------------------Lava---------------------------------------
 function Lava(pos, ch) {
   if (!(pos instanceof Vector))
     throw 'Argument is not object of Vector';
@@ -20,6 +20,11 @@ function Lava(pos, ch) {
 Lava.prototype.type = "lava";
 
 Lava.prototype.act = function(step, level) {
+  if (
+      typeof(step) !== 'number' || 
+      level.constructor.name !== 'Level'
+    )
+    throw 'Error of type arguments in Lava.act';
   var newPos = this.pos.plus(this.speed.times(step));
   if (!level.obstacleAt(newPos, this.size))
     this.pos = newPos;
