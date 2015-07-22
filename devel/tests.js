@@ -1,4 +1,6 @@
 var Coin = require('../js/lib/Actors/Coin'),
+    Lava = require('../js/lib/Actors/Lava'),
+    Player = require('../js/lib/Actors/Player'),
     Vector = require('../js/lib/Draw/Vector'),
     Level = require('../js/lib/Draw/Level'),
     DOMDisplay = require('../js/lib/Draw/DOMDisplay'),
@@ -45,6 +47,76 @@ describe('Object "Coin"', function() {
     expect(new Coin(new Vector(3, 4))).to.have.property('type', 'coin');
   });
 });
+
+describe('Object "Lava"', function() {
+
+  var testVector = new Vector(3, 4),
+      testLevel = new Level(['']),
+      testLava = new Lava(testVector, '=');
+
+  it('Check to create new object "Lava"', function(){
+    expect(new Lava(testVector, 'v')).to.be.ok;
+  });
+
+  it('Arguments in constructor "Lava" must be only "Vector" and value from ["=", "v", "|"]', function(){
+    expect(function(){ new Lava(testVector, '='); }).to.not.throwException();
+    expect(function(){ new Lava(testVector, '|'); }).to.not.throwException();
+    expect(function(){ new Lava(testVector, 'v'); }).to.not.throwException();
+    expect(function(){ new Lava(testVector, null); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(testVector, undefined); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(testVector, false); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(testVector, true); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(testVector, 1); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(testVector, 'string'); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(testVector, []); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(testVector, {}); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(testVector, function(){}); })
+      .to.throwException(/Unknow object!/);
+    expect(function(){ new Lava(null, '='); })
+      .to.throwException(/Argument is not object of Vector/);
+    expect(function(){ new Lava(undefined, '='); })
+      .to.throwException(/Argument is not object of Vector/);
+    expect(function(){ new Lava(false, '='); })
+      .to.throwException(/Argument is not object of Vector/);
+    expect(function(){ new Lava(1, '='); })
+      .to.throwException(/Argument is not object of Vector/);
+    expect(function(){ new Lava('string', '='); })
+      .to.throwException(/Argument is not object of Vector/);
+    expect(function(){ new Lava([], '='); })
+      .to.throwException(/Argument is not object of Vector/);
+    expect(function(){ new Lava({}, '='); })
+      .to.throwException(/Argument is not object of Vector/);
+    expect(function(){ new Lava(function(){}, '='); })
+      .to.throwException(/Argument is not object of Vector/);
+
+  });
+
+  it('Check method "act" in object "Lava"', function(){
+    expect(testLava).to.have.property('act');
+  });
+
+  it('Check property "type" in object "Lava"', function(){
+    expect(testLava).to.have.property('type', 'lava');
+  });
+});
+
+
+
+
+
+
+
+
+
+
 
 describe('Object "Vector"', function() {
   
