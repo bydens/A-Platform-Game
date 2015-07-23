@@ -5,6 +5,7 @@ var Coin = require('../js/lib/Actors/Coin'),
     Vector = require('../js/lib/Draw/Vector'),
     Level = require('../js/lib/Draw/Level'),
     DOMDisplay = require('../js/lib/Draw/DOMDisplay'),
+    elt = require('../js/lib/functions/elt'),
     expect = require('expect.js'),
     sinon = require('sinon');
 
@@ -51,7 +52,7 @@ describe('Object "Coin"', function() {
 describe('Object "Lava"', function() {
 
   var testVector = new Vector(3, 4),
-      testLevel = new Level(['']),
+      testLevel = new Level(game_levels[0]),
       testLava = new Lava(testVector, '=');
 
   it('Check to create new object "Lava"', function(){
@@ -132,7 +133,7 @@ describe('Object "Player"', function() {
 
   var testVector = new Vector(3, 4),
       testPlayer = new Player(testVector),
-      testLevel = new Level(['']);
+      testLevel = new Level(game_levels[0]);
 
   it('Check to create new object "Player"', function(){
     expect(testPlayer).to.be.ok;
@@ -258,6 +259,8 @@ describe('Object "Player"', function() {
 
 describe('Object "Vector"', function() {
   
+  var testVector = new Vector(3, 4);
+
   it('Check to create new object "Vector"', function() {
     expect(new Vector(3, 4)).to.eql({ x: 3, y: 4 });
   });
@@ -284,11 +287,16 @@ describe('Object "Vector"', function() {
   });
 
   it('Check method "plus" in "Vector"', function() {
-    var testVector = new Vector(3, 4);
     var stub = sinon.stub(testVector, "plus");
     stub.returns();
   });
   
+  it('Method "plus" must be return object "Vector"', function(){
+    var testVector = new Vector(2, 2);
+    var testPlus = testVector.plus(new Vector(1, 1));
+    expect(testPlus).to.be.a(Vector);
+  });
+
   it('Check correct arguments in method "plus" of object "Vector"', function() {
     var testVector = new Vector(3, 4);
     expect(function(){
@@ -312,9 +320,14 @@ describe('Object "Vector"', function() {
   });
 
   it('Check method "times" in "Vector"', function() {
-    var testVector = new Vector(3, 4);
     var stub = sinon.stub(testVector, "times");
     stub.returns();
+  });
+
+  it('Method "times" must be return object "Vector"', function(){
+    var testVector = new Vector(2, 2);
+    var testPlus = testVector.times(1);
+    expect(testPlus).to.be.a(Vector);
   });
 
   it('Check correct arguments in method "times" of object "Vector"', function() {
@@ -342,8 +355,11 @@ describe('Object "Vector"', function() {
 });
 
 describe('Object "Level"', function() {
+
+  var testVector = new Vector(2, 4);
+
   it('Check create new object "Level"', function() {
-    expect(new Level([''])).to.be.ok;
+    expect(new Level(game_levels[0])).to.be.ok;
   });
 
   it('Argument in "Level" object must be only "array"', function(){
@@ -354,79 +370,84 @@ describe('Object "Level"', function() {
     expect(function(){ new Level(1); }).to.throwException(); 
     expect(function(){ new Level('string'); }).to.throwException(); 
     expect(function(){ new Level({}); }).to.throwException(); 
-    expect(function(){ new Level(['']); }).to.not.throwException(); 
+    expect(function(){ new Level(game_levels[0]); }).to.not.throwException(); 
   });
 
-  var testLevel = new Level(['']);
+  var testLevel = new Level(game_levels[0]);
   it('Check method "isFinished" in "Level"', function() {
     var stub = sinon.stub(testLevel, "isFinished");
     stub.returns();
+  });
+
+  it('Method "isFinished" in game must be return "false"', function(){
+    var testLevel = new Level(game_levels[0]);
+    expect(testLevel.isFinished()).to.equal(false);
   });
 
   it('Check method "obstacleAt" in "Level"', function() {
     var stub = sinon.stub(testLevel, "obstacleAt");
     stub.returns();
   });
+
   it('Arguments in method "obstacleAt" of Level object, must be only "Vector"', 
     function(){
-      var testLevel = new Level(['']);
-      expect(testLevel.obstacleAt(new Vector(2, 4), new Vector(1, 2))).to.be.ok;
+      var testLevel = new Level(game_levels[0]);
+      expect(testLevel.obstacleAt(testVector, new Vector(1, 2))).to.be.ok;
       expect(
         function(){
-          testLevel.obstacleAt(new Vector(2, 4), null);
+          testLevel.obstacleAt(testVector, null); }
+      ).to.throwException();
+      expect(
+        function(){
+          testLevel.obstacleAt(testVector, undefined);
         }
       ).to.throwException();
       expect(
         function(){
-          testLevel.obstacleAt(new Vector(2, 4), undefined);
+          testLevel.obstacleAt(testVector, false);
         }
       ).to.throwException();
       expect(
         function(){
-          testLevel.obstacleAt(new Vector(2, 4), false);
+          testLevel.obstacleAt(testVector, true);
         }
       ).to.throwException();
       expect(
         function(){
-          testLevel.obstacleAt(new Vector(2, 4), true);
+          testLevel.obstacleAt(testVector, 1);
         }
       ).to.throwException();
       expect(
         function(){
-          testLevel.obstacleAt(new Vector(2, 4), 1);
+          testLevel.obstacleAt(testVector, 'string');
         }
       ).to.throwException();
       expect(
         function(){
-          testLevel.obstacleAt(new Vector(2, 4), 'string');
+          testLevel.obstacleAt(testVector, []);
         }
       ).to.throwException();
       expect(
         function(){
-          testLevel.obstacleAt(new Vector(2, 4), []);
-        }
-      ).to.throwException();
-      expect(
-        function(){
-          testLevel.obstacleAt(new Vector(2, 4), {});
+          testLevel.obstacleAt(testVector, {});
         }
       ).to.throwException();
 
-      expect(testLevel.obstacleAt).withArgs(null, new Vector(2, 4))
+      expect(testLevel.obstacleAt).withArgs(null, testVector)
         .to.throwException();
-      expect(testLevel.obstacleAt).withArgs(undefined, new Vector(2, 4))
+      expect(testLevel.obstacleAt).withArgs(undefined, testVector)
         .to.throwException();
-      expect(testLevel.obstacleAt).withArgs(true, new Vector(2, 4))
+      expect(testLevel.obstacleAt).withArgs(true, testVector)
         .to.throwException();
-      expect(testLevel.obstacleAt).withArgs(false, new Vector(2, 4))
+      expect(testLevel.obstacleAt).withArgs(false, testVector)
         .to.throwException();
-      expect(testLevel.obstacleAt).withArgs(1, new Vector(2, 4))
+      expect(testLevel.obstacleAt).withArgs(1, testVector)
         .to.throwException();
-      expect(testLevel.obstacleAt).withArgs('string', new Vector(2, 4))
+      expect(testLevel.obstacleAt).withArgs('string', testVector)
         .to.throwException();
-      expect(testLevel.obstacleAt).withArgs([], new Vector(2, 4))
+      expect(testLevel.obstacleAt).withArgs([], testVector)
         .to.throwException();
-      expect(testLevel.obstacleAt).withArgs({}, new Vector(2, 4))
+      expect(testLevel.obstacleAt).withArgs({}, testVector)
         .to.throwException();
     }
   );
@@ -447,9 +468,37 @@ describe('Object "Level"', function() {
 
 describe('Object DOMDisplay', function() {
   
+  var testDOM = new DOMDisplay(document.body, new Level(game_levels[0]));
   it('Check create new object DOMDisplay', function() {
-    expect(new DOMDisplay(document.body, new Level(game_levels[0]))).to.be.ok;
+    expect(testDOM).to.be.ok;
   });
 
-});
+  it('Check method "drawBackground" in object "DOMDisplay"', function(){
+    expect(testDOM).to.have.property('drawBackground');
+  });
+
+  it('Method "drawBackground" must be return "table"', function(){
+    expect(testDOM.drawBackground().nodeName).to.equal('TABLE');
+  });
+
+  it('Check method "drawActors" in object "DOMDisplay"', function(){
+    expect(testDOM).to.have.property('drawActors');
+  });
+
+  it('Method "drawActors" must be return "div"', function(){
+    expect(testDOM.drawActors().nodeName).to.equal('DIV');
+  });
+
+  it('Check method "drawFrame" in object "DOMDisplay"', function(){
+    expect(testDOM).to.have.property('drawFrame');
+  });
+
+  it('Check method "scrollPlayerIntoView" in object "DOMDisplay"', function(){
+    expect(testDOM).to.have.property('scrollPlayerIntoView');
+  });
+
+  it('Check method "clear" in object "DOMDisplay"', function(){
+    expect(testDOM).to.have.property('clear');
+  });
+
 });

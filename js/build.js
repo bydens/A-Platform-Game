@@ -378,9 +378,12 @@ DOMDisplay.prototype.clear = function() {
 
 module.exports = DOMDisplay;
 },{"../functions/elt":9}],7:[function(require,module,exports){
+//---------------------Level---------------------------------------------------
 var actorChars = require('../../data/actorChars');
 var Vector = require('./Vector');
-//---------------------Level---------------------------------------------------
+
+var maxStep = 0.05;
+
 function Level(plan) {
   if (Object.prototype.toString.call(plan).toUpperCase() !== '[OBJECT ARRAY]') 
     throw new Error('Argument is not array');
@@ -447,8 +450,6 @@ Level.prototype.actorAt = function(actor) {
   }
 };
 
-var maxStep = 0.05;
-
 Level.prototype.animate = function(step, keys) {
   if (this.status !== null)
     this.finishDelay -= step;
@@ -503,6 +504,12 @@ Vector.prototype.times = function(factor) {
 module.exports = Vector;
 },{}],9:[function(require,module,exports){
 function elt(name, className) {
+  if (
+      typeof(name) !== 'string' && 
+      (className !== null && typeof(className) !== 'string')
+    )
+    throw 'Arguments must be "string"';
+  
   var elt = document.createElement(name);
   if (className)
     elt.className = className;
@@ -556,11 +563,11 @@ function runGame(plans, Display) {
 
 module.exports = runGame;
 },{"../Draw/Level":7,"./runLevel":12}],12:[function(require,module,exports){
+//------------------------runLevel----------------------------------------------
 var trackKeys = require('./trackKeys');
 var runAnimation = require('./runAnimation');
 var arrowCodes = {37: "left", 38: "up", 39: "right"};
 
-//------------------------runLevel----------------------------------------------
 function runLevel(level, Display, andThen) {
   var display = new Display(document.body, level);
   var running = "yes";

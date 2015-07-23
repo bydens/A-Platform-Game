@@ -1,6 +1,9 @@
+//---------------------Level---------------------------------------------------
 var actorChars = require('../../data/actorChars');
 var Vector = require('./Vector');
-//---------------------Level---------------------------------------------------
+
+var maxStep = 0.05;
+
 function Level(plan) {
   if (Object.prototype.toString.call(plan).toUpperCase() !== '[OBJECT ARRAY]') 
     throw new Error('Argument is not array');
@@ -66,8 +69,6 @@ Level.prototype.actorAt = function(actor) {
       return other;
   }
 };
-
-var maxStep = 0.05;
 
 Level.prototype.animate = function(step, keys) {
   if (this.status !== null)

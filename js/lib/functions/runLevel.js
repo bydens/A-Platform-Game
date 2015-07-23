@@ -1,8 +1,8 @@
+//------------------------runLevel----------------------------------------------
 var trackKeys = require('./trackKeys');
 var runAnimation = require('./runAnimation');
 var arrowCodes = {37: "left", 38: "up", 39: "right"};
 
-//------------------------runLevel----------------------------------------------
 function runLevel(level, Display, andThen) {
   var display = new Display(document.body, level);
   var running = "yes";
