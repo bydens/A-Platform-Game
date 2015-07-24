@@ -4,10 +4,15 @@
   "author": "Denys Bykanov",
   "description": "Game, kill time",
   "devDependencies": {
-    "browserify": "latest"
+    "browserify": "latest",
+    "expect.js": "^0.3.1",
+    "mocha": "^2.2.5",
+    "sinon": "^1.15.4"
   },
   "scripts": {
     "build-js": "browserify js/lib/main.js > js/build.js",
-    "watch-js": "watchify js/lib/main.js -o js/build.js -v"
+    "watch-js": "watchify js/lib/main.js -o js/build.js -v",
+    "test": "mocha devel/tests.js",
+    "test-in-browser": "beefy devel/tests.js"
   }
 }

@@ -6,8 +6,8 @@ var Coin = require('../js/lib/Actors/Coin'),
     Level = require('../js/lib/Draw/Level'),
     DOMDisplay = require('../js/lib/Draw/DOMDisplay'),
     elt = require('../js/lib/functions/elt'),
-    expect = require('expect.js'),
-    sinon = require('sinon');
+    expect = require('../node_modules/expect.js'),
+    sinon = require('../node_modules/sinon');
 
 describe('Object "Coin"', function() {
 
