@@ -297,87 +297,155 @@ Player.prototype.act = function(step, level, keys) {
 
 module.exports = Player;
 },{"../Draw/Vector":8}],6:[function(require,module,exports){
-//----------------------------------Display-------------------------------------
-var elt = require('../functions/elt');
+//------------------------CanvasDisplay----------------------------------------
+var results = [
+  {name: "Satisfied", count: 1043, color: "lightblue"},
+  {name: "Neutral", count: 563, color: "lightgreen"},
+  {name: "Unsatisfied", count: 510, color: "pink"},
+  {name: "No comment", count: 175, color: "silver"}
+];
 
 var scale = 20; 
 
-function DOMDisplay(parent, level) {
-  if (
-        Object.prototype.toString.call(parent) !== '[object HTMLBodyElement]' ||
-        level.constructor.name !== 'Level' 
-      )
-    throw 'Error of type arguments in DOMDisplay';
-
-  this.wrap = parent.appendChild(elt("div", "game"));
-  this.level = level;
-
-  this.wrap.appendChild(this.drawBackground());
-  this.actorLayer = null;
-  this.drawFrame();
+function flipHorizontally(context, around) {
+  context.translate(around, 0);
+  context.scale(-1, 1);
+  context.translate(-around, 0);
 }
 
-DOMDisplay.prototype.drawBackground = function() {
-  var table = elt("table", "background");
-  table.style.width = this.level.width * scale + "px";
-  this.level.grid.forEach(function(row) {
-    var rowElt = table.appendChild(elt("tr"));
-    rowElt.style.height = scale + "px";
-    row.forEach(function(type) {
-      rowElt.appendChild(elt("td", type));
-    });
-  });
-  return table;
+function CanvasDisplay(parent, level) {
+  this.canvas = document.createElement("canvas");
+  this.canvas.width = Math.min(600, level.width * scale);
+  this.canvas.height = Math.min(450, level.height * scale);
+  parent.appendChild(this.canvas);
+  this.cx = this.canvas.getContext("2d");
+
+  this.level = level;
+  this.animationTime = 0;
+  this.flipPlayer = false;
+
+  this.viewport = {
+    left: 0,
+    top: 0,
+    width: this.canvas.width / scale,
+    height: this.canvas.height / scale
+  };
+
+  this.drawFrame(0);
+}
+
+CanvasDisplay.prototype.clear = function() {
+  this.canvas.parentNode.removeChild(this.canvas);
 };
 
-DOMDisplay.prototype.drawActors = function() {
-  var wrap = elt("div");
-  this.level.actors.forEach(function(actor) {
-    var rect = wrap.appendChild(elt("div", "actor " + actor.type));
-    rect.style.width = actor.size.x * scale + "px";
-    rect.style.height = actor.size.y * scale + "px";
-    rect.style.left = actor.pos.x * scale + "px";
-    rect.style.top = actor.pos.y * scale + "px";
-  });
-  return wrap;
+CanvasDisplay.prototype.drawFrame = function(step) {
+  this.animationTime += step;
+
+  this.updateViewport();
+  this.clearDisplay();
+  this.drawBackground();
+  this.drawActors();
 };
 
-DOMDisplay.prototype.drawFrame = function() {
-  if (this.actorLayer)
-    this.wrap.removeChild(this.actorLayer);
-  this.actorLayer = this.wrap.appendChild(this.drawActors());
-  this.wrap.className = "game " + (this.level.status || "");
-  this.scrollPlayerIntoView();
-};
-
-DOMDisplay.prototype.scrollPlayerIntoView = function() {
-  var width = this.wrap.clientWidth;
-  var height = this.wrap.clientHeight;
-  var margin = width / 3;
-
-  var left = this.wrap.scrollLeft, right = left + width;
-  var top = this.wrap.scrollTop, bottom = top + height;
-
+CanvasDisplay.prototype.updateViewport = function() {
+  var view = this.viewport, margin = view.width / 3;
   var player = this.level.player;
-  var center = player.pos.plus(player.size.times(0.5))
-                 .times(scale);
+  var center = player.pos.plus(player.size.times(0.5));
 
-  if (center.x < left + margin)
-    this.wrap.scrollLeft = center.x - margin;
-  else if (center.x > right - margin)
-    this.wrap.scrollLeft = center.x + margin - width;
-  if (center.y < top + margin)
-    this.wrap.scrollTop = center.y - margin;
-  else if (center.y > bottom - margin)
-    this.wrap.scrollTop = center.y + margin - height;
+  if (center.x < view.left + margin)
+    view.left = Math.max(center.x - margin, 0);
+  else if (center.x > view.left + view.width - margin)
+    view.left = Math.min(center.x + margin - view.width,
+                         this.level.width - view.width);
+  if (center.y < view.top + margin)
+    view.top = Math.max(center.y - margin, 0);
+  else if (center.y > view.top + view.height - margin)
+    view.top = Math.min(center.y + margin - view.height,
+                        this.level.height - view.height);
 };
 
-DOMDisplay.prototype.clear = function() {
-  this.wrap.parentNode.removeChild(this.wrap);
+CanvasDisplay.prototype.clearDisplay = function() {
+  if (this.level.status == "won")
+    this.cx.fillStyle = "rgb(68, 191, 255)";
+  else if (this.level.status == "lost")
+    this.cx.fillStyle = "rgb(44, 136, 214)";
+  else
+    this.cx.fillStyle = "rgb(52, 166, 251)";
+  this.cx.fillRect(0, 0,
+                   this.canvas.width, this.canvas.height);
 };
 
-module.exports = DOMDisplay;
-},{"../functions/elt":9}],7:[function(require,module,exports){
+var otherSprites = document.createElement("img");
+otherSprites.src = "img/sprites.png";
+
+CanvasDisplay.prototype.drawBackground = function() {
+  var view = this.viewport;
+  var xStart = Math.floor(view.left);
+  var xEnd = Math.ceil(view.left + view.width);
+  var yStart = Math.floor(view.top);
+  var yEnd = Math.ceil(view.top + view.height);
+
+  for (var y = yStart; y < yEnd; y++) {
+    for (var x = xStart; x < xEnd; x++) {
+      var tile = this.level.grid[y][x];
+      if (tile == null) continue;
+      var screenX = (x - view.left) * scale;
+      var screenY = (y - view.top) * scale;
+      var tileX = tile == "lava" ? scale : 0;
+      this.cx.drawImage(otherSprites,
+                        tileX,         0, scale, scale,
+                        screenX, screenY, scale, scale);
+    }
+  }
+};
+
+var playerSprites = document.createElement("img");
+playerSprites.src = "img/player.png";
+var playerXOverlap = 4;
+
+CanvasDisplay.prototype.drawPlayer = function(x, y, width,
+                                              height) {
+  var sprite = 8, player = this.level.player;
+  width += playerXOverlap * 2;
+  x -= playerXOverlap;
+  if (player.speed.x != 0)
+    this.flipPlayer = player.speed.x < 0;
+
+  if (player.speed.y != 0)
+    sprite = 9;
+  else if (player.speed.x != 0)
+    sprite = Math.floor(this.animationTime * 12) % 8;
+
+  this.cx.save();
+  if (this.flipPlayer)
+    flipHorizontally(this.cx, x + width / 2);
+
+  this.cx.drawImage(playerSprites,
+                    sprite * width, 0, width, height,
+                    x,              y, width, height);
+
+  this.cx.restore();
+};
+
+CanvasDisplay.prototype.drawActors = function() {
+  this.level.actors.forEach(function(actor) {
+    var width = actor.size.x * scale;
+    var height = actor.size.y * scale;
+    var x = (actor.pos.x - this.viewport.left) * scale;
+    var y = (actor.pos.y - this.viewport.top) * scale;
+    if (actor.type == "player") {
+      this.drawPlayer(x, y, width, height);
+    } else {
+      var tileX = (actor.type == "coin" ? 2 : 1) * scale;
+      this.cx.drawImage(otherSprites,
+                        tileX, 0, width, height,
+                        x,     y, width, height);
+    }
+  }, this);
+};
+
+module.exports = CanvasDisplay;
+},{}],7:[function(require,module,exports){
 //---------------------Level---------------------------------------------------
 var actorChars = require('../../data/actorChars');
 var Vector = require('./Vector');
@@ -503,21 +571,6 @@ Vector.prototype.times = function(factor) {
 
 module.exports = Vector;
 },{}],9:[function(require,module,exports){
-function elt(name, className) {
-  if (
-      typeof(name) !== 'string' && 
-      (className !== null && typeof(className) !== 'string')
-    )
-    throw 'Arguments must be "string"';
-  
-  var elt = document.createElement(name);
-  if (className)
-    elt.className = className;
-  return elt;
-}
-
-module.exports = elt;
-},{}],10:[function(require,module,exports){
 //-----------------------Running the game---------------------------------------
 function runAnimation(frameFunc) {
   var lastTime = null;
@@ -535,7 +588,7 @@ function runAnimation(frameFunc) {
 }
 
 module.exports = runAnimation;
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var Level = require('../Draw/Level');
 var runLevel = require('./runLevel');
 
@@ -562,7 +615,7 @@ function runGame(plans, Display) {
 }
 
 module.exports = runGame;
-},{"../Draw/Level":7,"./runLevel":12}],12:[function(require,module,exports){
+},{"../Draw/Level":7,"./runLevel":11}],11:[function(require,module,exports){
 //------------------------runLevel----------------------------------------------
 var trackKeys = require('./trackKeys');
 var runAnimation = require('./runAnimation');
@@ -607,7 +660,7 @@ function runLevel(level, Display, andThen) {
 }
 
 module.exports = runLevel;
-},{"./runAnimation":10,"./trackKeys":13}],13:[function(require,module,exports){
+},{"./runAnimation":9,"./trackKeys":12}],12:[function(require,module,exports){
 //----------------------------Tracking keys-------------------------------------
 function trackKeys(codes) {
   var pressed = Object.create(null);
@@ -630,10 +683,10 @@ function trackKeys(codes) {
 }
 
 module.exports = trackKeys;
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var GAME_LEVELS = require('../data/game_levels.js');
-var DOMDisplay = require('./Draw/DOMDisplay');
+var CanvasDisplay = require('./Draw/CanvasDisplay');
 var runGame = require('./functions/runGame');
 
-runGame(GAME_LEVELS, DOMDisplay);
-},{"../data/game_levels.js":2,"./Draw/DOMDisplay":6,"./functions/runGame":11}]},{},[14]);
+runGame(GAME_LEVELS, CanvasDisplay);
+},{"../data/game_levels.js":2,"./Draw/CanvasDisplay":6,"./functions/runGame":10}]},{},[13]);

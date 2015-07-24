@@ -20,7 +20,7 @@
       * Folder `js/lib/Draw` - to contain files objects for drawing:
         * *Vector.js* - object "Vector" for direction;
         * *Level.js* - object "Level" for drawing levels;
-        * *DOMDisplay.js* - object "DOMDisplay" for building level with objects acters;
+        * *CanvasDisplay.js* - object "CanvasDisplay" for building level with objects acters;
       * Folder `js/lib/functions` - to contain of helper functions:
         * *elt.js* - to create an element and give it a class;
         * *runAnimation.js* - draws a single frame;
