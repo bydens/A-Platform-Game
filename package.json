@@ -10,8 +10,8 @@
     "sinon": "^1.15.4"
   },
   "scripts": {
-    "build-js": "browserify js/lib/main.js > js/build.js",
-    "watch-js": "watchify js/lib/main.js -o js/build.js -v",
+    "build-js": "browserify src/lib/main.js > js/build.js",
+    "watch-js": "watchify src/lib/main.js -o js/build.js -v",
     "test": "mocha devel/tests.js",
     "test-in-browser": "beefy devel/tests.js"
   }

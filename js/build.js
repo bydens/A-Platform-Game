@@ -444,12 +444,6 @@ CanvasDisplay.prototype.drawActors = function() {
   }, this);
 };
 
-CanvasDisplay.prototype.gameOver = function(){
-  var img = document.createElement("img");
-  img.src = "../../img/game_over.png";
-  this.cx.drawImage();
-};
-
 module.exports = CanvasDisplay;
 },{}],7:[function(require,module,exports){
 //---------------------Level---------------------------------------------------
@@ -583,7 +577,6 @@ module.exports = function() {
   canvas.height = 450;
   document.body.appendChild(canvas);
   var cx = canvas.getContext("2d");
-
   var img = document.createElement("img");
   img.src = "img/game_over.png";
   img.addEventListener("load", function() {
@@ -624,7 +617,6 @@ function runGame(plans, Display) {
           startLevel(n, life);
         } else {
           gameOver();
-          // startLevel(0, addLife);
         }
       } else if (n < plans.length - 1) {
         startLevel(n + 1, life);
@@ -706,9 +698,9 @@ function trackKeys(codes) {
 
 module.exports = trackKeys;
 },{}],14:[function(require,module,exports){
-var GAME_LEVELS = require('../data/game_levels.js');
+var GAME_LEVELS = require('../data/gameLevels.js');
 var CanvasDisplay = require('./Draw/CanvasDisplay');
 var runGame = require('./functions/runGame');
 
 runGame(GAME_LEVELS, CanvasDisplay);
-},{"../data/game_levels.js":2,"./Draw/CanvasDisplay":6,"./functions/runGame":11}]},{},[14]);
+},{"../data/gameLevels.js":2,"./Draw/CanvasDisplay":6,"./functions/runGame":11}]},{},[14]);
