@@ -1,5 +1,5 @@
 #A Platform Game
-![Project: A Platform Game](https://raw.githubusercontent.com/bydens/A-Platform-Game/master/game.png)
+![Project: A Platform Game](https://raw.githubusercontent.com/bydens/A-Platform-Game/master/gamec.png)
 
 ##Overview
 
