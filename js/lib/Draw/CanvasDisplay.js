@@ -89,7 +89,7 @@ CanvasDisplay.prototype.drawBackground = function() {
   for (var y = yStart; y < yEnd; y++) {
     for (var x = xStart; x < xEnd; x++) {
       var tile = this.level.grid[y][x];
-      if (tile == null) continue;
+      if (tile === null) continue;
       var screenX = (x - view.left) * scale;
       var screenY = (y - view.top) * scale;
       var tileX = tile == "lava" ? scale : 0;
@@ -109,12 +109,12 @@ CanvasDisplay.prototype.drawPlayer = function(x, y, width,
   var sprite = 8, player = this.level.player;
   width += playerXOverlap * 2;
   x -= playerXOverlap;
-  if (player.speed.x != 0)
+  if (player.speed.x !== 0)
     this.flipPlayer = player.speed.x < 0;
 
-  if (player.speed.y != 0)
+  if (player.speed.y !== 0)
     sprite = 9;
-  else if (player.speed.x != 0)
+  else if (player.speed.x !== 0)
     sprite = Math.floor(this.animationTime * 12) % 8;
 
   this.cx.save();

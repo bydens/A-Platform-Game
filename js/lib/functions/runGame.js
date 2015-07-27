@@ -1,5 +1,6 @@
 var Level = require('../Draw/Level');
 var runLevel = require('./runLevel');
+var gameOver = require('./gameOver');
 
 //----------------runGame-------------------------------------------------------
 var addLife = 2;
@@ -11,7 +12,7 @@ function runGame(plans, Display) {
           life--;
           startLevel(n, life);
         } else {
-          startLevel(0, addLife);
+          gameOver();
         }
       } else if (n < plans.length - 1) {
         startLevel(n + 1, life);

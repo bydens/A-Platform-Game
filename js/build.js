@@ -388,7 +388,7 @@ CanvasDisplay.prototype.drawBackground = function() {
   for (var y = yStart; y < yEnd; y++) {
     for (var x = xStart; x < xEnd; x++) {
       var tile = this.level.grid[y][x];
-      if (tile == null) continue;
+      if (tile === null) continue;
       var screenX = (x - view.left) * scale;
       var screenY = (y - view.top) * scale;
       var tileX = tile == "lava" ? scale : 0;
@@ -408,12 +408,12 @@ CanvasDisplay.prototype.drawPlayer = function(x, y, width,
   var sprite = 8, player = this.level.player;
   width += playerXOverlap * 2;
   x -= playerXOverlap;
-  if (player.speed.x != 0)
+  if (player.speed.x !== 0)
     this.flipPlayer = player.speed.x < 0;
 
-  if (player.speed.y != 0)
+  if (player.speed.y !== 0)
     sprite = 9;
-  else if (player.speed.x != 0)
+  else if (player.speed.x !== 0)
     sprite = Math.floor(this.animationTime * 12) % 8;
 
   this.cx.save();
@@ -442,6 +442,12 @@ CanvasDisplay.prototype.drawActors = function() {
                         x,     y, width, height);
     }
   }, this);
+};
+
+CanvasDisplay.prototype.gameOver = function(){
+  var img = document.createElement("img");
+  img.src = "../../img/game_over.png";
+  this.cx.drawImage();
 };
 
 module.exports = CanvasDisplay;
@@ -571,6 +577,20 @@ Vector.prototype.times = function(factor) {
 
 module.exports = Vector;
 },{}],9:[function(require,module,exports){
+module.exports = function() {
+  var canvas = document.createElement("canvas");
+  canvas.width = 600;
+  canvas.height = 450;
+  document.body.appendChild(canvas);
+  var cx = canvas.getContext("2d");
+
+  var img = document.createElement("img");
+  img.src = "img/game_over.png";
+  img.addEventListener("load", function() {
+      cx.drawImage(img, 0, 0);
+  });
+};
+},{}],10:[function(require,module,exports){
 //-----------------------Running the game---------------------------------------
 function runAnimation(frameFunc) {
   var lastTime = null;
@@ -588,9 +608,10 @@ function runAnimation(frameFunc) {
 }
 
 module.exports = runAnimation;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var Level = require('../Draw/Level');
 var runLevel = require('./runLevel');
+var gameOver = require('./gameOver');
 
 //----------------runGame-------------------------------------------------------
 var addLife = 2;
@@ -602,7 +623,8 @@ function runGame(plans, Display) {
           life--;
           startLevel(n, life);
         } else {
-          startLevel(0, addLife);
+          gameOver();
+          // startLevel(0, addLife);
         }
       } else if (n < plans.length - 1) {
         startLevel(n + 1, life);
@@ -615,7 +637,7 @@ function runGame(plans, Display) {
 }
 
 module.exports = runGame;
-},{"../Draw/Level":7,"./runLevel":11}],11:[function(require,module,exports){
+},{"../Draw/Level":7,"./gameOver":9,"./runLevel":12}],12:[function(require,module,exports){
 //------------------------runLevel----------------------------------------------
 var trackKeys = require('./trackKeys');
 var runAnimation = require('./runAnimation');
@@ -660,7 +682,7 @@ function runLevel(level, Display, andThen) {
 }
 
 module.exports = runLevel;
-},{"./runAnimation":9,"./trackKeys":12}],12:[function(require,module,exports){
+},{"./runAnimation":10,"./trackKeys":13}],13:[function(require,module,exports){
 //----------------------------Tracking keys-------------------------------------
 function trackKeys(codes) {
   var pressed = Object.create(null);
@@ -683,10 +705,10 @@ function trackKeys(codes) {
 }
 
 module.exports = trackKeys;
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var GAME_LEVELS = require('../data/game_levels.js');
 var CanvasDisplay = require('./Draw/CanvasDisplay');
 var runGame = require('./functions/runGame');
 
 runGame(GAME_LEVELS, CanvasDisplay);
-},{"../data/game_levels.js":2,"./Draw/CanvasDisplay":6,"./functions/runGame":10}]},{},[13]);
+},{"../data/game_levels.js":2,"./Draw/CanvasDisplay":6,"./functions/runGame":11}]},{},[14]);
